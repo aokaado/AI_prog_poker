@@ -212,7 +212,7 @@ public class TexasHoldEm {
 		if (activePlayers.size() == 1) {
 			System.out.println("Player " + activePlayers.get(0).getName()
 					+ " has won as everyone else folded.");
-			bestPlayers.get(0).recieveMoneyFromWin(pot);
+			activePlayers.get(0).recieveMoneyFromWin(pot);
 			return;
 		}
 		for (Player p : activePlayers) {
