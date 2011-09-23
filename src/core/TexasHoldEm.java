@@ -85,8 +85,8 @@ public class TexasHoldEm {
 	public TexasHoldEm() {
 		sc = new Scanner(System.in);
 		// signupPlayers();
-		fastSignupPlayers();
 		contextAnalyzer = new P3ContextAnalyzer(this);
+		fastSignupPlayers();
 		handsPlayed = 0;
 
 		gameState = GameState.none;

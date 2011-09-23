@@ -96,6 +96,7 @@ public class P3ContextAnalyzer {
 	 * }
 	 */
 	public double highestAnticipated() {
+		System.out.println("HER ER JEG OG!");
 		double highest = 0.0, tmp,divisor;
 		int cx[];
 		for (int i = contextQueue.size() - 1; i > contextQueue.size()

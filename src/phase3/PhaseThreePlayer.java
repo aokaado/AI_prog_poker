@@ -20,6 +20,7 @@ public class PhaseThreePlayer extends Player {
 		int suited = (isSuited()) ? 0 : 9;
 		double handStrength = 0.0, deeperHandStrength = 0.0;
 		int minimum = game.getHighbet() - currentBet;
+		System.out.println("HER ER JEG");
 		double highestOpp = context.highestAnticipated();
 		switch (game.getGameState()) {
 		case Pre_flop:
