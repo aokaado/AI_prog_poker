@@ -99,9 +99,11 @@ public class P3ContextAnalyzer {
 		System.out.println("HER ER JEG OG!");
 		double highest = 0.0, tmp,divisor;
 		int cx[];
+		if(contextQueue.size() == 0) return 0.0;
 		for (int i = contextQueue.size() - 1; i > contextQueue.size()
 				- game.getActivePlayersSize() + 1; i--) {
 			// get current contextplayer array from queue of last activities
+			System.out.println("i: " +i);
 			cx = contextQueue.get(i);
 			divisor = contextOdds[cx[0]][cx[1]][cx[2]][cx[3]][cx[4]][1];
 			if (divisor == 0) continue;
