@@ -101,7 +101,7 @@ public class P3ContextAnalyzer {
 		int cx[];
 		if(contextQueue.size() == 0) return 0.0;
 		for (int i = contextQueue.size() - 1; i > contextQueue.size()
-				- game.getActivePlayersSize() + 1; i--) {
+				- game.getActivePlayersSize() + 1 && i >= 0 ; i--) {
 			// get current contextplayer array from queue of last activities
 			System.out.println("i: " +i);
 			cx = contextQueue.get(i);

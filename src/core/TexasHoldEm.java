@@ -13,7 +13,7 @@ public class TexasHoldEm {
 
 	public static final int MINPLAYERS = 2;
 	public static final int MAXPLAYERS = 10;
-	public static final int HANDSTOPLAY = 20;
+	public static final int HANDSTOPLAY = 100;
 	public static final int BETTINGROUNDS = 2;
 
 	// TODO make these dynamic ?
