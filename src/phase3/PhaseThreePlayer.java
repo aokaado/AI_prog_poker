@@ -41,6 +41,7 @@ public class PhaseThreePlayer extends Player {
 			
 			if (highestOpp > 0.0) {
 				double strengthDiff = handStrength - highestOpp;
+				System.out.println(printUseOfContextAnalysis(handStrength, highestOpp));
 				if (strengthDiff > .14) {
 					return 100 + minimum;
 				} else if (strengthDiff > .0) {
@@ -68,7 +69,17 @@ public class PhaseThreePlayer extends Player {
 			
 			handStrength = handStrength(5);
 			if(highestOpp != 0){
-				
+				double strengthDiff = handStrength - highestOpp;
+				System.out.println(printUseOfContextAnalysis(handStrength, highestOpp));
+				if (strengthDiff > .1) {
+					return 200 + minimum;
+				} else if (strengthDiff > .0) {
+					return 50 + minimum;
+				} else if (strengthDiff > -.1) {
+					return minimum;
+				} else
+					return 0;
+
 			}
 			
 			
@@ -88,4 +99,9 @@ public class PhaseThreePlayer extends Player {
 
 	}
 
+	
+	public String printUseOfContextAnalysis(double handStrength, double opponent){
+		return new String("" + this.name + " used context analysis, hs: " + handStrength + "\t opponent: " + opponent + 
+				" diff: " + (handStrength - opponent));
+	}
 }
