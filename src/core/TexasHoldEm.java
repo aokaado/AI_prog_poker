@@ -13,7 +13,7 @@ public class TexasHoldEm {
 
 	public static final int MINPLAYERS = 2;
 	public static final int MAXPLAYERS = 10;
-	public static final int HANDSTOPLAY = 100;
+	public static final int HANDSTOPLAY = 500;
 	public static final int BETTINGROUNDS = 2;
 
 	// TODO make these dynamic ?
@@ -149,19 +149,22 @@ public class TexasHoldEm {
 		nextState();
 		postBlinds();
 		printHands();
-
 		startBetting();
+		
 		flop();
 		nextState();
 		startBetting();
+		
 		turn();
 		nextState();
 		startBetting();
+		
 		river();
 		nextState();
 		startBetting();
 		showdown();
 		contextAnalyzer.notifyEndOfHand(activePlayers);
+		
 		nextState();
 		handsPlayed++;
 		turn = (turn + 1) % players.size();
@@ -206,6 +209,12 @@ public class TexasHoldEm {
 		Player tmp;
 		ArrayList<Player> bestPlayers = new ArrayList<Player>();
 		System.out.println("\nShowdown: ");
+		if (activePlayers.size() == 1) {
+			System.out.println("Player " + activePlayers.get(0).getName()
+					+ " has won as everyone else folded.");
+			bestPlayers.get(0).recieveMoneyFromWin(pot);
+			return;
+		}
 		for (Player p : activePlayers) {
 			p.calculatePower();
 			System.out.println(p.getName() + " " + result(p.getPower()));
