@@ -150,21 +150,21 @@ public class TexasHoldEm {
 		postBlinds();
 		printHands();
 		startBetting();
-		
+
 		flop();
 		nextState();
 		startBetting();
-		
+
 		turn();
 		nextState();
 		startBetting();
-		
+
 		river();
 		nextState();
 		startBetting();
 		showdown();
 		contextAnalyzer.notifyEndOfHand(activePlayers);
-		
+
 		nextState();
 		handsPlayed++;
 		turn = (turn + 1) % players.size();
@@ -417,15 +417,17 @@ public class TexasHoldEm {
 	@SuppressWarnings("unused")
 	private void fastSignupPlayers() {
 		players = new ArrayList<Player>();
-		players.add(new PhaseOnePlayer(1, this));
-		players.add(new PhaseOnePlayer(2, this));
-		//players.add(new PhaseOnePlayer(3, this));
-		players.add(new PhaseTwoPlayer("Phase2 4", this));
-		players.add(new PhaseTwoPlayer("Phase2 5", this));
-		//players.add(new PhaseTwoPlayer("Phase2 6", this));
+//		players.add(new PhaseOnePlayer(1, this));
+//		players.add(new PhaseOnePlayer(2, this));
+		// players.add(new PhaseOnePlayer(3, this));
+		players.add(new PhaseTwoPlayer("Phase2 aggressive", this, 1.2));
+		players.add(new PhaseTwoPlayer("Phase2 conservative", this, 1.0));
+		// players.add(new PhaseTwoPlayer("Phase2 6", this));
 		// players.add(new PhaseThreePlayer("Phase3 7", this, contextAnalyzer));
-		 players.add(new PhaseThreePlayer("Phase3 8", this, contextAnalyzer));
-		 players.add(new PhaseThreePlayer("Phase3 9", this, contextAnalyzer));
+		players.add(new PhaseThreePlayer("Phase3 aggressive", this,
+				contextAnalyzer, 1.2));
+		players.add(new PhaseThreePlayer("Phase3 conservative", this,
+				contextAnalyzer, 1.0));
 		// players.add(new PhaseTwoPlayer("phase2 4", this));
 		// players.add(new HumanPlayer(sc, this));
 	}
@@ -434,10 +436,13 @@ public class TexasHoldEm {
 	private void signupPlayers() {
 		players = new ArrayList<Player>();
 
-		System.out.println("New Game started sign up players\n"
-				+ " * 'h' for human player.\n"
-				+ " * '1' for phase one player.\n" + "\n"
-				+ " End with anything else.\n");
+		System.out
+				.println("New Game started sign up players\n"
+						+ " * 'h' for human player.\n"
+						+ " * '1' for phase one player.\n"
+						+ " * '2<aggressiveness>' for phase two player.\n"
+						+ " * '3<aggressiveness>' for phase three player.\n where <aggressiveness> is a number from 0 to 9"
+						+ "\n" + " End with anything else.\n");
 
 		String s = sc.next();
 		int comps = 1;
@@ -450,9 +455,12 @@ public class TexasHoldEm {
 				players.add(new PhaseOnePlayer(comps++, this));
 				break;
 			case '2':
-				players.add(new PhaseTwoPlayer("Phase2 " + (comps++), this));
+				players.add(new PhaseTwoPlayer("Phase2 " + (comps++), this,
+						1.0 + Double.parseDouble("" + s.charAt(1))));
 				break;
 			case '3':
+				players.add(new PhaseTwoPlayer("Phase2 " + (comps++), this,
+						1.0 + Double.parseDouble("" + s.charAt(1))));
 				break;
 			default:
 				s = null;

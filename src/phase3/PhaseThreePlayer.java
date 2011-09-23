@@ -8,11 +8,13 @@ import core.*;
 public class PhaseThreePlayer extends Player {
 
 	private P3ContextAnalyzer context;
+	private double aggressiveness;
 
 	public PhaseThreePlayer(String name, TexasHoldEm game,
-			P3ContextAnalyzer context) {
+			P3ContextAnalyzer context, double aggressiveness) {
 		super(name, game);
 		this.context = context;
+		this.aggressiveness = aggressiveness;
 	}
 
 	protected int placeBet() {
@@ -34,14 +36,14 @@ public class PhaseThreePlayer extends Player {
 			try {
 				rs.next();
 				handStrength = rs.getDouble(1);
-				deeperHandStrength = handStrength - potOdds();
+				deeperHandStrength = handStrength*aggressiveness - potOdds();
 			} catch (SQLException e) {
 				e.printStackTrace();
 			}
 			db.disconnect();
 			
 			if (highestOpp > 0.0) {
-				double strengthDiff = handStrength - highestOpp;
+				double strengthDiff = handStrength*aggressiveness - highestOpp;
 //				System.out.println(printUseOfContextAnalysis(handStrength, highestOpp));
 				if (strengthDiff > .14) {
 					return 100 + minimum;
@@ -68,7 +70,7 @@ public class PhaseThreePlayer extends Player {
 			
 			
 			
-			handStrength = handStrength(5);
+			handStrength = handStrength(5)*aggressiveness;
 			if(highestOpp != 0){
 				double strengthDiff = handStrength - highestOpp;
 				System.out.println(printUseOfContextAnalysis(handStrength, highestOpp));

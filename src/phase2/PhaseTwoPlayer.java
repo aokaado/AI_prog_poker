@@ -7,8 +7,11 @@ import core.*;
 
 public class PhaseTwoPlayer extends Player {
 
-	public PhaseTwoPlayer(String name, TexasHoldEm game) {
+	private double aggressiveness;
+
+	public PhaseTwoPlayer(String name, TexasHoldEm game, double aggressiveness) {
 		super(name, game);
+		this.aggressiveness = aggressiveness;
 		// TODO Auto-generated constructor stub
 	}
 
@@ -30,7 +33,7 @@ public class PhaseTwoPlayer extends Player {
 			try {
 				rs.next();
 				handStrength = rs.getDouble(1);// * game.getNumPlayers();
-				deeperHandStrength = handStrength - potOdds();
+				deeperHandStrength = handStrength*aggressiveness - potOdds();
 			} catch (SQLException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
@@ -51,7 +54,7 @@ public class PhaseTwoPlayer extends Player {
 			// printCards();
 			// System.out.println("HS "+handStrength());//+" "+TexasHoldEm.result(getPower()));
 
-			double hs = handStrength(5) - potOdds();
+			double hs = handStrength(5)*aggressiveness - potOdds();
 //			System.out.println("" + getName() + ": hs " + handStrength + ", dhs " + deeperHandStrength + ", new hs " + hs);
 			if (hs > .1) {
 				return 200 + minimumBet();
