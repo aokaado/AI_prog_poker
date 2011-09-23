@@ -20,7 +20,7 @@ public class PhaseThreePlayer extends Player {
 		int suited = (isSuited()) ? 0 : 9;
 		double handStrength = 0.0, deeperHandStrength = 0.0;
 		int minimum = game.getHighbet() - currentBet;
-
+		double highestOpp = context.highestAnticipated();
 		switch (game.getGameState()) {
 		case Pre_flop:
 
@@ -39,9 +39,19 @@ public class PhaseThreePlayer extends Player {
 			}
 			db.disconnect();
 			
-			
-			
-			
+			if (highestOpp > 0.0) {
+				double strengthDiff = handStrength - highestOpp;
+				if (strengthDiff > .14) {
+					return 100 + minimum;
+				} else if (strengthDiff > .0) {
+					return 50 + minimum;
+				} else if (strengthDiff > -.14) {
+					return minimum;
+				} else
+					return 0;
+
+			}
+
 			if (deeperHandStrength > .14) {
 				return 100 + minimum;
 			} else if (deeperHandStrength > .0) {
@@ -53,12 +63,17 @@ public class PhaseThreePlayer extends Player {
 		case Flop:
 		case Turn:
 		case River:
-			// printCards();
-			// System.out.println("HS "+handStrength());//+" "+TexasHoldEm.result(getPower()));
-
-			double hs = handStrength(5) - potOdds();
-			// System.out.println("" + getName() + ": hs " + handStrength +
-			// ", dhs " + deeperHandStrength + ", new hs " + hs);
+			
+			
+			
+			handStrength = handStrength(5);
+			if(highestOpp != 0){
+				
+			}
+			
+			
+			
+			double hs = handStrength - potOdds();
 			if (hs > .1) {
 				return 200 + minimumBet();
 			} else if (hs > .0) {
