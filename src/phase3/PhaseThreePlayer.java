@@ -20,7 +20,7 @@ public class PhaseThreePlayer extends Player {
 		int suited = (isSuited()) ? 0 : 9;
 		double handStrength = 0.0, deeperHandStrength = 0.0;
 		int minimum = game.getHighbet() - currentBet;
-		System.out.println("HER ER JEG");
+//		System.out.println("HER ER JEG");
 		double highestOpp = context.highestAnticipated();
 		switch (game.getGameState()) {
 		case Pre_flop:
@@ -42,7 +42,7 @@ public class PhaseThreePlayer extends Player {
 			
 			if (highestOpp > 0.0) {
 				double strengthDiff = handStrength - highestOpp;
-				System.out.println(printUseOfContextAnalysis(handStrength, highestOpp));
+//				System.out.println(printUseOfContextAnalysis(handStrength, highestOpp));
 				if (strengthDiff > .14) {
 					return 100 + minimum;
 				} else if (strengthDiff > .0) {
