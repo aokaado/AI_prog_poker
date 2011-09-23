@@ -36,7 +36,7 @@ public class PhaseTwoPlayer extends Player {
 				e.printStackTrace();
 			}
 			db.disconnect();
-//			System.out.println("" + getName() + ": hs " + handStrength + ", dhs " + deeperHandStrength);
+			System.out.println("" + getName() + ": hs " + handStrength + ", dhs " + deeperHandStrength);
 			if (deeperHandStrength > .14) {
 				return 100 + minimum;
 			} else if (deeperHandStrength > .0) {

@@ -108,6 +108,7 @@ public class P3ContextAnalyzer {
 					/ divisor; // number of accumulations
 			if (tmp > highest) highest = tmp;
 		}
+		System.out.println(highest + " highest");
 		return highest;
 	}
 
