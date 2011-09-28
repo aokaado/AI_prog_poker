@@ -56,7 +56,7 @@ public class PhaseThreePlayer extends Player {
 			db.disconnect();
 
 			if (highestOpp > 0.0) {
-				System.out.println(printUseOfContextAnalysis(handStrength, highestOpp));
+//				System.out.println(printUseOfContextAnalysis(handStrength, highestOpp));
 				double strengthDiff = handStrength - highestOpp;
 				if (strengthDiff > .05) {
 					return 100 + minimum;
@@ -86,8 +86,8 @@ public class PhaseThreePlayer extends Player {
 			
 			if (highestOpp != 0) {
 				double strengthDiff = handStrength - highestOpp;
-				System.out.println(printUseOfContextAnalysis(handStrength,
-						highestOpp));
+//				System.out.println(printUseOfContextAnalysis(handStrength,
+//						highestOpp));
 				if (strengthDiff > .1) {
 					return 200 + minimum;
 				} else if (strengthDiff > .0) {

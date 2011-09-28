@@ -13,7 +13,7 @@ public class TexasHoldEm {
 
 	public static final int MINPLAYERS = 2;
 	public static final int MAXPLAYERS = 10;
-	public static final int HANDSTOPLAY = 1000;
+	public static final int HANDSTOPLAY = 500;
 	public static final int BETTINGROUNDS = 2;
 
 	public static final int SMALLBLIND = 50;
@@ -353,7 +353,6 @@ public class TexasHoldEm {
 	 * notifies contextAnalyzer for phase 3 players.
 	 */
 	private void startBetting() {
-		contextAnalyzer.newBettingRound(players);
 		int better = 0, lastbet = 0, betround = 0, bet;
 		Player currentBetter, highBetter = null;
 		do {
@@ -425,7 +424,7 @@ public class TexasHoldEm {
 				// System.out.println("Betround " + betround
 				// + " is now finished\n\n");
 			}
-		} while (lastbet < activePlayers.size() - 1 && betround < BETTINGROUNDS
+		} while ((lastbet < activePlayers.size() - 1 || betround == 0) && betround < BETTINGROUNDS
 				&& activePlayers.size() > 1);
 		// 3 rounds of betting max
 
@@ -485,8 +484,8 @@ public class TexasHoldEm {
 		players.add(new PhaseTwoPlayer("Phase2 1.0", this, 1.0));
 		players.add(new PhaseTwoPlayer("Phase2 1.1", this, 1.1));
 		players.add(new PhaseTwoPlayer("Phase2 1.2", this, 1.2));
-		players.add(new PhaseThreePlayer("Phase3 1.2", this,
-				contextAnalyzer, 1.2));
+		players.add(new PhaseThreePlayer("Phase3 1.0", this,
+				contextAnalyzer, 1.0));
 		//players.add(new PhaseThreePlayer("Phase3 aggr1.2", this,
 		//		contextAnalyzer, 1.2));
 		// players.add(new PhaseTwoPlayer("phase2 4", this));

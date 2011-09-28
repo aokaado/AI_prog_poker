@@ -15,8 +15,7 @@ public class P3ContextAnalyzer {
 	// player # , gamestate, number of raises, potOddsBin, action , 0 = strength
 	// <-> 1 = numberofobs
 	private static double contextOdds[][][][][][] = new double[10][4][4][4][4][2]; // global
-																					// model
-	private static int bets; // number of raises
+												
 	private TexasHoldEm game;
 	private ArrayList<int[]> contextQueue; // model for current hand
 
@@ -24,15 +23,6 @@ public class P3ContextAnalyzer {
 		this.game = game;
 		contextQueue = new ArrayList<int[]>();
 	}
-
-	public void newBettingRound(ArrayList<Player> players) {
-		bets = 0;
-	}
-
-	public void raise() {
-		bets++;
-	}
-
 	/**
 	 * Adds An event into the contextqueue of this hand, which might go into the
 	 * global eventlist if player continues into showdown.
@@ -128,7 +118,7 @@ public class P3ContextAnalyzer {
 			// System.out.println("i: " +i);
 			cx = contextQueue.get(i);
 			if (cx[1] != state) break;
-			System.out.println(" Checked:         \t\thandstrength: " + contextOdds[cx[0]][cx[1]][cx[2]][cx[3]][cx[4]][0] + ", occurances: " + contextOdds[cx[0]][cx[1]][cx[2]][cx[3]][cx[4]][1] + " " + cx[0] + " " + cx[1] + " " + cx[2] + " " + cx[3] + " " + cx[4]);
+//			System.out.println(" Checked:         \t\thandstrength: " + contextOdds[cx[0]][cx[1]][cx[2]][cx[3]][cx[4]][0] + ", occurances: " + contextOdds[cx[0]][cx[1]][cx[2]][cx[3]][cx[4]][1] + " " + cx[0] + " " + cx[1] + " " + cx[2] + " " + cx[3] + " " + cx[4]);
 			divisor = contextOdds[cx[0]][cx[1]][cx[2]][cx[3]][cx[4]][1];
 			if (divisor < 2)
 				continue;
@@ -137,7 +127,7 @@ public class P3ContextAnalyzer {
 			if (tmp > highest)
 				highest = tmp;
 		}
-		System.out.println("returned highest: " + highest);
+//		System.out.println("returned highest: " + highest);
 		return highest;
 	}
 
