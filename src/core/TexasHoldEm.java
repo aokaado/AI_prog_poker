@@ -13,7 +13,7 @@ public class TexasHoldEm {
 
 	public static final int MINPLAYERS = 2;
 	public static final int MAXPLAYERS = 10;
-	public static final int HANDSTOPLAY = 20;
+	public static final int HANDSTOPLAY = 200;
 	public static final int BETTINGROUNDS = 2;
 
 	public static final int SMALLBLIND = 50;
@@ -384,15 +384,14 @@ public class TexasHoldEm {
 				} else {
 
 					if (currentBetter.getCurrentBet() + bet > highbet) { // raise
-						contextAnalyzer.event(currentBetter, Action.raise);
 						pot += bet;
 						currentBetter.loseMoneyfromBet(bet);
 						currentBetter.setCurrentBet(bet
 								+ currentBetter.getCurrentBet());
-
 						lastbet = 0;
-						contextAnalyzer.raise();
+						//contextAnalyzer.raise();
 						int oldhigh = highbet;
+						contextAnalyzer.event(currentBetter, Action.raise);
 						highbet = currentBetter.getCurrentBet();
 						better++;
 						System.out.println(currentBetter.getName()
@@ -421,7 +420,7 @@ public class TexasHoldEm {
 				// System.out.println("Betround " + betround
 				// + " is now finished\n\n");
 			}
-		} while (lastbet < activePlayers.size() && betround < BETTINGROUNDS
+		} while (lastbet < activePlayers.size()-1 && betround < BETTINGROUNDS
 				&& activePlayers.size() > 1);
 		// 3 rounds of betting max
 

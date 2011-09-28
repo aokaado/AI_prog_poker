@@ -132,6 +132,8 @@ public class PhaseThreePlayer extends Player {
 		case River:
 
 			handStrength = handStrength(5) * playerincrease;
+			
+			
 			if (highestOpp != 0) {
 				double strengthDiff = handStrength - highestOpp;
 				System.out.println(printUseOfContextAnalysis(handStrength,
@@ -148,11 +150,11 @@ public class PhaseThreePlayer extends Player {
 			}
 
 			double hs = handStrength - potOdds();
-			if (hs > .1) {
+			if (hs > .5) {
 				return 200 + minimumBet();
-			} else if (hs > .0) {
+			} else if (hs > .25) {
 				return 50 + minimumBet();
-			} else if (hs > -.1) {
+			} else if (hs > .1) {
 				return minimumBet();
 			} else
 				return 0;

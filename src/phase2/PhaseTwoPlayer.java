@@ -39,8 +39,11 @@ public class PhaseTwoPlayer extends Player {
 					+ " from hole_strength where ref = " + ID + ";");
 			try {
 				rs.next();
-				handStrength = rs.getDouble(1) * aggressiveness * playerincrease;
+				handStrength = rs.getDouble(1); //* aggressiveness * playerincrease;
+				System.out.print(this.getName() + " actual hs is : " + handStrength + "\t\t");
+				handStrength = handStrength * aggressiveness * playerincrease;
 				deeperHandStrength = handStrength - potOdds();
+				System.out.println(this.getName() + " distorted hs is : " + deeperHandStrength);
 			} catch (SQLException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
@@ -59,15 +62,18 @@ public class PhaseTwoPlayer extends Player {
 		case River:
 			// printCards();
 			// System.out.println("HS "+handStrength());//+" "+TexasHoldEm.result(getPower()));
-
-			double hs = handStrength(5)*playerincrease - potOdds();
+			
+			double hs = handStrength(5);//*playerincrease - potOdds();
+			System.out.print(this.getName() + " actual hs is : " + hs + "\t\t");
+			hs = hs * playerincrease - potOdds();
+			System.out.println(this.getName() + " distorted hs is : " + hs);
 			// System.out.println("" + getName() + ": hs " + handStrength +
 			// ", dhs " + deeperHandStrength + ", new hs " + hs);
-			if (hs > .1) {
+			if (hs > .5) {
 				return 200 + minimumBet();
-			} else if (hs > .0) {
+			} else if (hs > .25) {
 				return 50 + minimumBet();
-			} else if (hs > -.1) {
+			} else if (hs > 0.1) {
 				return minimumBet();
 			} else
 				return 0;
