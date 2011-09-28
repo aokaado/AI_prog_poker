@@ -44,7 +44,7 @@ public class P3ContextAnalyzer {
 	 */
 	public void event(Player p, TexasHoldEm.Action a) {
 		int event[] = { game.getIndexOfPlayer(p),
-				game.getGameState().getStateNum(), raiseBin(p.getCurrentBet() - game.getHighbet()),
+				game.getGameState().getStateNum(), raiseBin(p.getFutureBet() - game.getHighbet()),
 				potOddsBin(p.potOdds()), a.getActionNum() };
 		contextQueue.add(event);
 	}

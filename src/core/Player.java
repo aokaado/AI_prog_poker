@@ -8,6 +8,7 @@ public class Player {
 	protected Card[] hand = new Card[2];
 	protected String name;
 	protected int stack; // money; stack of chips
+	protected int bet;
 	protected int currentBet; //amount gone into the pot for this particular hand.
 	public static final int STARTSTACK = 10000;
 	protected int power[];
@@ -64,11 +65,16 @@ public class Player {
 	 * @return intelligently calculated amount of chips to bet
 	 */
 	public int bet() {
-		return placeBet();
+		bet = placeBet();
+		return bet;
 	}
 
 	public int getCurrentBet() {
 		return currentBet;
+	}
+	
+	public int getFutureBet(){
+		return bet;
 	}
 
 	public void setCurrentBet(int currentbet) {

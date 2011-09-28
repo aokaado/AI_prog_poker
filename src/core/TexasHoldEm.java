@@ -384,6 +384,7 @@ public class TexasHoldEm {
 				} else {
 
 					if (currentBetter.getCurrentBet() + bet > highbet) { // raise
+						contextAnalyzer.event(currentBetter, Action.raise);
 						pot += bet;
 						currentBetter.loseMoneyfromBet(bet);
 						currentBetter.setCurrentBet(bet
@@ -391,7 +392,6 @@ public class TexasHoldEm {
 						lastbet = 0;
 						//contextAnalyzer.raise();
 						int oldhigh = highbet;
-						contextAnalyzer.event(currentBetter, Action.raise);
 						highbet = currentBetter.getCurrentBet();
 						better++;
 						System.out.println(currentBetter.getName()
