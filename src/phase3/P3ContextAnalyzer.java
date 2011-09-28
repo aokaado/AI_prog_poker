@@ -116,7 +116,7 @@ public class P3ContextAnalyzer {
 	 * Using the opponent model, a phase 3 player calculates the highest
 	 * probable hand strength of all the other active players.
 	 */
-	public double highestAnticipated() {
+	public double highestAnticipated(int state) {
 		double highest = 0.0, tmp, divisor;
 		int cx[];
 		if (contextQueue.size() == 0)
@@ -127,6 +127,8 @@ public class P3ContextAnalyzer {
 			// get current contextplayer array from queue of last activities
 			// System.out.println("i: " +i);
 			cx = contextQueue.get(i);
+			if (cx[1] != state) break;
+			System.out.println(" Checked:         \t\thandstrength: " + contextOdds[cx[0]][cx[1]][cx[2]][cx[3]][cx[4]][0] + ", occurances: " + contextOdds[cx[0]][cx[1]][cx[2]][cx[3]][cx[4]][1] + " " + cx[0] + " " + cx[1] + " " + cx[2] + " " + cx[3] + " " + cx[4]);
 			divisor = contextOdds[cx[0]][cx[1]][cx[2]][cx[3]][cx[4]][1];
 			if (divisor < 2)
 				continue;
@@ -135,6 +137,7 @@ public class P3ContextAnalyzer {
 			if (tmp > highest)
 				highest = tmp;
 		}
+		System.out.println("returned highest: " + highest);
 		return highest;
 	}
 

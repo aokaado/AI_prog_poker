@@ -13,7 +13,7 @@ public class TexasHoldEm {
 
 	public static final int MINPLAYERS = 2;
 	public static final int MAXPLAYERS = 10;
-	public static final int HANDSTOPLAY = 200;
+	public static final int HANDSTOPLAY = 1000;
 	public static final int BETTINGROUNDS = 2;
 
 	public static final int SMALLBLIND = 50;
@@ -130,8 +130,11 @@ public class TexasHoldEm {
 					+ HANDSTOPLAY);
 		}
 		for (Player p : players)
-			System.out
-					.println(p.getName() + " has " + p.getStack() + " chips. He won " + p.getWinCount() + " hands, playing in " + p.getShowdhownCount() + " showdowns. He won " + p.getEasyWinsCount() + "before any showdown.");
+			System.out.println(p.getName() + " has " + p.getStack()
+					+ " chips. He won " + p.getWinCount()
+					+ " hands, playing in " + p.getShowdhownCount()
+					+ " showdowns. He won " + p.getEasyWinsCount()
+					+ "before any showdown.");
 	}
 
 	public void playHand() {
@@ -274,12 +277,14 @@ public class TexasHoldEm {
 
 		if (bestPlayers.size() == 1) {
 			System.out.println("Player " + bestPlayers.get(0).getName()
-					+ " has won with " + result(bestPlayers.get(0).getPower()) + ". He won " + pot + " chips.");
+					+ " has won with " + result(bestPlayers.get(0).getPower())
+					+ ". He won " + pot + " chips.");
 			bestPlayers.get(0).recieveMoneyFromWin(pot);
 			bestPlayers.get(0).incrementWinCount();
-			
+
 		} else {
-			System.out.print("There was a draw, pot of " + pot + "split between:\n");
+			System.out.print("There was a draw, pot of " + pot
+					+ "split between:\n");
 			for (Player p : bestPlayers) {
 				p.recieveMoneyFromWin(pot / bestPlayers.size());
 				System.out.println(p.getName() + " " + result(p.getPower())
@@ -390,7 +395,7 @@ public class TexasHoldEm {
 						currentBetter.setCurrentBet(bet
 								+ currentBetter.getCurrentBet());
 						lastbet = 0;
-						//contextAnalyzer.raise();
+						// contextAnalyzer.raise();
 						int oldhigh = highbet;
 						highbet = currentBetter.getCurrentBet();
 						better++;
@@ -420,7 +425,7 @@ public class TexasHoldEm {
 				// System.out.println("Betround " + betround
 				// + " is now finished\n\n");
 			}
-		} while (lastbet < activePlayers.size()-1 && betround < BETTINGROUNDS
+		} while (lastbet < activePlayers.size() - 1 && betround < BETTINGROUNDS
 				&& activePlayers.size() > 1);
 		// 3 rounds of betting max
 
@@ -477,12 +482,13 @@ public class TexasHoldEm {
 //				contextAnalyzer, 1.0));
 //		players.add(new PhaseThreePlayer("Phase3 aggr1.2", this,
 //				contextAnalyzer, 1.2));
-		players.add(new PhaseTwoPlayer("Phase2 cons1.0", this, 1.0));
-		players.add(new PhaseTwoPlayer("Phase2 aggr1.2", this, 1.2));
-		players.add(new PhaseThreePlayer("Phase3 cons1.2", this,
+		players.add(new PhaseTwoPlayer("Phase2 1.0", this, 1.0));
+		players.add(new PhaseTwoPlayer("Phase2 1.1", this, 1.1));
+		players.add(new PhaseTwoPlayer("Phase2 1.2", this, 1.2));
+		players.add(new PhaseThreePlayer("Phase3 1.2", this,
 				contextAnalyzer, 1.2));
-		players.add(new PhaseThreePlayer("Phase3 aggr1.4", this,
-				contextAnalyzer, 1.4));
+		//players.add(new PhaseThreePlayer("Phase3 aggr1.2", this,
+		//		contextAnalyzer, 1.2));
 		// players.add(new PhaseTwoPlayer("phase2 4", this));
 		// players.add(new HumanPlayer(sc, this));
 	}

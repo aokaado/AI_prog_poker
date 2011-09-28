@@ -69,11 +69,13 @@ public class PhaseTwoPlayer extends Player {
 			System.out.println(this.getName() + " distorted hs is : " + hs);
 			// System.out.println("" + getName() + ": hs " + handStrength +
 			// ", dhs " + deeperHandStrength + ", new hs " + hs);
-			if (hs > .5) {
-				return 200 + minimumBet();
+			if (hs > .6) {
+				return 220 + minimumBet();
+			} else if (hs > .40) {
+				return 150 + minimumBet();
 			} else if (hs > .25) {
 				return 50 + minimumBet();
-			} else if (hs > 0.1) {
+			}else if (hs > 0.1) {
 				return minimumBet();
 			} else
 				return 0;

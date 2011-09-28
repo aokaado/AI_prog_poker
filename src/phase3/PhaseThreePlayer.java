@@ -29,12 +29,12 @@ public class PhaseThreePlayer extends Player {
 		int suited = (isSuited()) ? 0 : 9;
 		double handStrength = 0.0, deeperHandStrength = 0.0;
 		int minimum = game.getHighbet() - currentBet;
-		double highestOpp = context.highestAnticipated();
+		double highestOpp = context.highestAnticipated(game.getGameState().getStateNum());
 		
 
 		double playerincrease = 1.0;
 		if (game.getActivePlayersSize() > 5)
-			playerincrease = Math.pow(1.04, game.getActivePlayersSize() - 1);
+			playerincrease = Math.pow(1.04, game.getActivePlayersSize() - 3);
 
 		switch (game.getGameState()) {
 		case Pre_flop:
@@ -55,19 +55,19 @@ public class PhaseThreePlayer extends Player {
 			}
 			db.disconnect();
 
-			/*if (highestOpp > 0.0) {
-				
+			if (highestOpp > 0.0) {
+				System.out.println(printUseOfContextAnalysis(handStrength, highestOpp));
 				double strengthDiff = handStrength - highestOpp;
-				if (strengthDiff > .14) {
+				if (strengthDiff > .05) {
 					return 100 + minimum;
-				} else if (strengthDiff > .0) {
-					return 50 + minimum;
 				} else if (strengthDiff > -.05) {
+					return 50 + minimum;
+				} else if (strengthDiff > -.15) {
 					return minimum;
 				} else
 					return 0;
 
-			}*/
+			}
 
 			if (deeperHandStrength > .14) {
 				return 100 + minimum;
@@ -78,57 +78,7 @@ public class PhaseThreePlayer extends Player {
 			} else
 				return 0;
 		case Flop:
-			/*handStrength = handStrength(5) * playerincrease;
-			if (highestOpp != 0) {
-				double strengthDiff = handStrength - highestOpp;
-				System.out.println(printUseOfContextAnalysis(handStrength,
-						highestOpp));
-				if (strengthDiff > .1) {
-					return 200 + minimum;
-				} else if (strengthDiff > .0) {
-					return 50 + minimum;
-				} else if (strengthDiff > -.05) {
-					return minimum;
-				} else
-					return 0;
-
-			}
-
-			double hs = handStrength - potOdds();
-			if (hs > .1) {
-				return 200 + minimumBet();
-			} else if (hs > .0) {
-				return 50 + minimumBet();
-			} else if (hs > -.1) {
-				return minimumBet();
-			} else
-				return 0;*/
 		case Turn:
-			/*handStrength = handStrength(5) * playerincrease;
-			if (highestOpp != 0) {
-				double strengthDiff = handStrength - highestOpp;
-				System.out.println(printUseOfContextAnalysis(handStrength,
-						highestOpp));
-				if (strengthDiff > .1) {
-					return 200 + minimum;
-				} else if (strengthDiff > .0) {
-					return 50 + minimum;
-				} else if (strengthDiff > -.05) {
-					return minimum;
-				} else
-					return 0;
-
-			}
-
-			double hs = handStrength - potOdds();
-			if (hs > .1) {
-				return 200 + minimumBet();
-			} else if (hs > .0) {
-				return 50 + minimumBet();
-			} else if (hs > -.1) {
-				return minimumBet();
-			} else
-				return 0;*/
 		case River:
 
 			handStrength = handStrength(5) * playerincrease;
@@ -150,8 +100,10 @@ public class PhaseThreePlayer extends Player {
 			}
 
 			double hs = handStrength - potOdds();
-			if (hs > .5) {
-				return 200 + minimumBet();
+			if (hs > .6) {
+				return 220 + minimumBet();
+			} else if (hs > .40) {
+				return 150 + minimumBet();
 			} else if (hs > .25) {
 				return 50 + minimumBet();
 			} else if (hs > .1) {
