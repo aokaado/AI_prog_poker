@@ -13,16 +13,17 @@ public class P3ContextAnalyzer {
 	private static final double potOddsBins[] = { -0.1, 0.1, 0.2, 0.3 };
 	// player # , gamestate, number of raises, potOddsBin, action , 0 = strength
 	// <-> 1 = numberofobs
-	private static double contextOdds[][][][][][] = new double[10][4][30][4][4][2];
-	private static int bets;
+	private static double contextOdds[][][][][][] = new double[10][4][30][4][4][2]; //global model
+	private static int bets; // number of raises
 	private TexasHoldEm game;
-	private ArrayList<int[]> contextQueue;
+	private ArrayList<int[]> contextQueue; //model for current hand
 
 	public P3ContextAnalyzer(TexasHoldEm game) {
 		this.game = game;
 		contextQueue = new ArrayList<int[]>();
 	}
 
+	
 	public void newBettingRound(ArrayList<Player> players) {
 		bets = 0;
 	}
@@ -31,6 +32,12 @@ public class P3ContextAnalyzer {
 		bets++;
 	}
 
+	/**
+	 * Adds An event into the contextqueue of this hand, which might go into the global eventlist if player
+	 * continues into showdown.
+	 * @param p player doing action
+	 * @param a action done
+	 */
 	public void event(Player p, TexasHoldEm.Action a) {
 		int event[] = { game.getIndexOfPlayer(p),
 				game.getGameState().getStateNum(), bets,
@@ -38,6 +45,12 @@ public class P3ContextAnalyzer {
 		contextQueue.add(event);
 	}
 
+	/**
+	 * This method notifies that the hand has ended, and that the contextAnalyzer can now
+	 * add hand strengths to all context-action pairs by players who showed their hands, and
+	 * add these pairs to the global model.
+	 * @param players list of players who were in the showdown.
+	 */
 	public void notifyEndOfHand(ArrayList<Player> players) {
 		boolean inShowdown = false;
 		for (int[] e : contextQueue) {
@@ -66,9 +79,8 @@ public class P3ContextAnalyzer {
 						+ " from hole_strength where ref = " + ID + ";");
 				try {
 					rs.next();
-					handStrength = rs.getDouble(1);// * game.getNumPlayers();
+					handStrength = rs.getDouble(1);
 				} catch (SQLException sql) {
-					// TODO Auto-generated catch block
 					sql.printStackTrace();
 				}
 				db.disconnect();
@@ -81,8 +93,6 @@ public class P3ContextAnalyzer {
 			default:
 				throw new NullPointerException();
 			}
-			// System.out.println("CONTEXTODDS "+ e[0] + " " + e[1] + " " + e[2]
-			// + " " + e[3] + " " + e[4]);
 			contextOdds[e[0]][e[1]][e[2]][e[3]][e[4]][0] += handStrength;
 			contextOdds[e[0]][e[1]][e[2]][e[3]][e[4]][1]++;
 		}
@@ -95,8 +105,12 @@ public class P3ContextAnalyzer {
 	 * ()][game.getGameState().getStateNum()][bets][potOddsBin(p.potOdds())][][]
 	 * }
 	 */
+	
+	/**
+	 * Using the opponent model, a phase 3 player calculates the highest probable hand strength of 
+	 * all the other active players.
+	 */
 	public double highestAnticipated() {
-		//System.out.println("HER ER JEG OG!");
 		double highest = 0.0, tmp,divisor;
 		int cx[];
 		if(contextQueue.size() == 0) return 0.0;
@@ -106,17 +120,21 @@ public class P3ContextAnalyzer {
 			//System.out.println("i: " +i);
 			cx = contextQueue.get(i);
 			divisor = contextOdds[cx[0]][cx[1]][cx[2]][cx[3]][cx[4]][1];
-			if (divisor < 5) continue;
+			if (divisor < 2) continue;
 			tmp = contextOdds[cx[0]][cx[1]][cx[2]][cx[3]][cx[4]][0] // accumulated strength
-					/ divisor; // number of accumulations
+					/ divisor; // number of occurrences
 			if (tmp > highest) highest = tmp;
 		}
-		//System.out.println(highest + " highest");
 		return highest;
 	}
-
+	
+	/**
+	 * 
+	 * @param potOdds the calculated pot odds 
+	 * @return cannot have continuous pot odds, so pot odds are placed into one of four buckets, or bins.
+	 * returns bin Id.
+	 */
 	private int potOddsBin(double potOdds) {
-		// System.out.println("potodds " + potOdds);
 		for (int i = 3; i >= 0; i--)
 			if (potOdds > potOddsBins[i])
 				return i;

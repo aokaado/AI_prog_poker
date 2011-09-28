@@ -15,12 +15,19 @@ public class PhaseTwoPlayer extends Player {
 		// TODO Auto-generated constructor stub
 	}
 
+	/**
+	 * player places bet using information on handStrength and potodds.
+	 */
 	protected int placeBet() {
 		int ID = getHoleID();
 		int suited = (isSuited()) ? 0 : 9;
-		double handStrength = 0.0, deeperHandStrength = 0.0; 
+		double handStrength = 0.0, deeperHandStrength = 0.0;
 		int minimum = game.getHighbet() - currentBet;
-		
+
+		double playerincrease = 1.0;
+		if (game.getActivePlayersSize() > 5)
+			playerincrease = Math.pow(1.04, game.getActivePlayersSize() - 1);
+
 		switch (game.getGameState()) {
 		case Pre_flop:
 
@@ -32,14 +39,13 @@ public class PhaseTwoPlayer extends Player {
 					+ " from hole_strength where ref = " + ID + ";");
 			try {
 				rs.next();
-				handStrength = rs.getDouble(1);// * game.getNumPlayers();
-				deeperHandStrength = handStrength*aggressiveness - potOdds();
+				handStrength = rs.getDouble(1) * aggressiveness * playerincrease;
+				deeperHandStrength = handStrength - potOdds();
 			} catch (SQLException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
 			db.disconnect();
-			System.out.println("" + getName() + ": hs " + handStrength + ", dhs " + deeperHandStrength);
 			if (deeperHandStrength > .14) {
 				return 100 + minimum;
 			} else if (deeperHandStrength > .0) {
@@ -54,8 +60,9 @@ public class PhaseTwoPlayer extends Player {
 			// printCards();
 			// System.out.println("HS "+handStrength());//+" "+TexasHoldEm.result(getPower()));
 
-			double hs = handStrength(5)*aggressiveness - potOdds();
-//			System.out.println("" + getName() + ": hs " + handStrength + ", dhs " + deeperHandStrength + ", new hs " + hs);
+			double hs = handStrength(5)*playerincrease - potOdds();
+			// System.out.println("" + getName() + ": hs " + handStrength +
+			// ", dhs " + deeperHandStrength + ", new hs " + hs);
 			if (hs > .1) {
 				return 200 + minimumBet();
 			} else if (hs > .0) {
@@ -67,9 +74,6 @@ public class PhaseTwoPlayer extends Player {
 		default:
 			return 0;
 		}
-		
+
 	}
-
-
-
 }

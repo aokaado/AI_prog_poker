@@ -8,11 +8,16 @@ public class Player {
 	protected Card[] hand = new Card[2];
 	protected String name;
 	protected int stack; // money; stack of chips
-	protected int currentBet;
+	protected int currentBet; //amount gone into the pot for this particular hand.
 	public static final int STARTSTACK = 10000;
-	protected int power[]; // TODO b�r endres senere, gj�r det enkelt f�rst
+	protected int power[];
 	protected TexasHoldEm game;
-
+	
+	//Statistical fields, not for any real use.
+	protected int wincount = 0; // counts number of wins
+	protected int showdownCount = 0; // counts number of showdowns the player has a part in.
+	protected int easywins = 0;
+	
 	public Player(String name, TexasHoldEm game) {
 		this.name = name;
 		this.stack = STARTSTACK;
@@ -54,6 +59,10 @@ public class Player {
 		this.stack -= bet;
 	}
 
+	/**
+	 * 
+	 * @return intelligently calculated amount of chips to bet
+	 */
 	public int bet() {
 		return placeBet();
 	}
@@ -84,6 +93,9 @@ public class Player {
 		return this.power;
 	}
 
+	/**
+	 * Resets currentBet amount, as hand is over.
+	 */
 	protected void endBettingRound() {
 		currentBet = 0;
 	}
@@ -131,11 +143,13 @@ public class Player {
 
 		ArrayList<Card> pHand = getHandAsList();
 		for (Card c : game.getTable())
-			pHand.add(c);
-
-		this.setPower(cards_py.calcCardsPower(pHand));
+			if(c != null)pHand.add(c);
+		this.setPower(cards_py.calcCardsPower(pHand));	
 	}
 
+	/**
+	 * returns ID for use when looking up strength in db
+	 */
 	public int getHoleID() {
 		if (hand[0].getFace() < hand[1].getFace()) {
 			Card tmp = hand[0];
@@ -165,15 +179,25 @@ public class Player {
 				/ (double) (minimumBet() + game.getPot());
 	}
 
+	/**
+	 * 
+	 * @return smallest amount necessary to bet in order to stay in the game.
+	 */
 	public int minimumBet() {
 		return game.getHighbet() - currentBet;
 	}
 	
+	/**
+	 * 
+	 * @param tableSizeLimit denotes how many of the cards on the table we include when calculating handstrength.
+	 * If 5, use as many cards as available, but if less, use only that amount, even if table contains river as well.
+	 * Usually used with 5 as parameter, except when opponent modeling for phase 3 players.
+	 * @return The hand's strength, calculated by comparing hand to all other possible hands.
+	 */
 	public double handStrength(int tableSizeLimit) {
-		// CardDeck cd = new CardDeck();
-		// cd.resetDeck();
 		int win = 0, draw = 0, loss = 0, k = game.getActivePlayersSize();
 		Card[] c = new Card[2];
+		
 		for (Suit s : Suit.values()) { // C-D-H-S
 			for (int i = 2; i < 15; i++) {
 				c[0] = new Card(i, s);
@@ -203,7 +227,38 @@ public class Player {
 		}
 		return Math
 				.pow(
-						((double) (win + (draw / 2)) / (double) (win + draw + loss)),
+						((double) (win + (draw / 2)) 
+								/ 
+								(double) (win + draw + loss)),
 						k);
 	}
+	
+	public void incrementWinCount(){
+		this.wincount++;
+	}
+	
+	public int getWinCount(){
+		return this.wincount;
+	}
+	
+	public void incrementshowdownCount(){
+		this.showdownCount++;
+	}
+	
+	public int getShowdhownCount(){
+		return this.showdownCount;
+	}
+	
+	public void incrementeasyWinsCount(){
+		this.easywins++;
+	}
+	
+	public int getEasyWinsCount(){
+		return this.easywins;
+	}
+	
+	
+	
 }
+
+

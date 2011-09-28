@@ -5,7 +5,11 @@ import java.util.ArrayList;
 import javax.net.ssl.HandshakeCompletedEvent;
 
 import core.*;
-
+/**
+ * 
+ * @author Martin and Skootsj
+ * @purpose creates a database with information on hand strengths of all possible hole cards.
+ */
 public class HandStrength {
 
 	ArrayList<Card[]> hands;
@@ -16,6 +20,11 @@ public class HandStrength {
 		db = new Database();
 	}
 
+	/**
+	 *  Adds all possible hands (hole cards) into the arraylist hands. 169 in total, 
+	 *  the rest are unimportant duplicates
+	 *  
+	 */
 	public void genHoldCards() {
 		Card[] c, c2;
 		for (int i = 2; i < 15; i++) {
@@ -48,6 +57,7 @@ public class HandStrength {
 		System.out.println("generated " + hands.size() + " hands");
 	}
 
+	
 	public static void main(String args[]) {
 
 		HandStrength hs = new HandStrength();
@@ -68,6 +78,9 @@ public class HandStrength {
 
 	}
 
+	/**
+	 * creates the database
+	 */
 	private void performRolloutSimulation() {
 		CardDeck cd = new CardDeck();
 		Card[] community = new Card[5];
@@ -77,8 +90,7 @@ public class HandStrength {
 		double strengths[] = new double[18];
 		for (Card[] testingHand : hands) { // simulation for each hole
 			int offSet = ((testingHand[0].getSuit() == testingHand[1].getSuit()) ? 0
-					: 9); // adding offset to be used later
-			// if cards are suited
+					: 9); // adding offset to be used later if cards are suited
 			// IN DB: suited-----unsuited
 			int holeId = testingHand[0].getFace() * 100
 					+ testingHand[1].getFace();

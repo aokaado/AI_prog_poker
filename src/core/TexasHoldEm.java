@@ -13,11 +13,9 @@ public class TexasHoldEm {
 
 	public static final int MINPLAYERS = 2;
 	public static final int MAXPLAYERS = 10;
-	public static final int HANDSTOPLAY = 500;
+	public static final int HANDSTOPLAY = 20;
 	public static final int BETTINGROUNDS = 2;
 
-	// TODO make these dynamic ?
-	// TOANSWER yes, plz
 	public static final int SMALLBLIND = 50;
 	public static final int BIGBLIND = 100;
 
@@ -78,9 +76,10 @@ public class TexasHoldEm {
 	private int handsPlayed; // how far we are into the overall game
 	private Card table[]; // contains flop, turn and river
 	private int pot; // total in pot at any given time
-	// private int pool; // keeps track of the pool in the current betting round
 	private int highbet; // keeps track of the highest bet of this hand
-	private P3ContextAnalyzer contextAnalyzer;
+	private P3ContextAnalyzer contextAnalyzer; // Calculates player models used
+
+	// by all phase3 players
 
 	public TexasHoldEm() {
 		sc = new Scanner(System.in);
@@ -125,13 +124,14 @@ public class TexasHoldEm {
 
 	public void playGame() {
 		turn = 0;
-		while (handsPlayed < HANDSTOPLAY)
-			// IS HANDSPLAYED INITIALISED HERE?
+		while (handsPlayed < HANDSTOPLAY) {
 			playHand();
-		// TODO print endofgame info etc
+			System.out.println("\t\t\t\t\t\t\t\t\t\t " + handsPlayed + "/"
+					+ HANDSTOPLAY);
+		}
 		for (Player p : players)
 			System.out
-					.println(p.getName() + " has " + p.getStack() + " chips.");
+					.println(p.getName() + " has " + p.getStack() + " chips. He won " + p.getWinCount() + " hands, playing in " + p.getShowdhownCount() + " showdowns. He won " + p.getEasyWinsCount() + "before any showdown.");
 	}
 
 	public void playHand() {
@@ -139,32 +139,47 @@ public class TexasHoldEm {
 		activePlayers = new ArrayList<Player>();
 
 		// add from the player pool starting at the player that is to start
-		// betting
+		// betting.
 		for (int i = 0; i < players.size(); i++) {
 			players.get((i + turn + 2) % players.size()).clearCards();
 			activePlayers.add(players.get((i + turn + 2) % players.size()));
 		}
 
 		dealCards();
-		nextState();
+		nextState(); // now in pre-flop
 		postBlinds();
-		printHands();
+		// printHands();
 		startBetting();
 
-		flop();
-		nextState();
-		startBetting();
+		nextState(); // now in flop
+		// System.out.println("RIGHT BEFORE NEXT ROUND");
 
-		turn();
-		nextState();
-		startBetting();
+		if (activePlayers.size() > 1) { // no need to bet if only one player
+			flop();
+			startBetting();
+		}
+		nextState(); // now in turn
+		if (activePlayers.size() > 1) { // no need to bet if only one player
+			turn();
+			startBetting();
+		}
 
-		river();
-		nextState();
-		startBetting();
-		showdown();
-		contextAnalyzer.notifyEndOfHand(activePlayers);
-
+		nextState(); // now in river
+		if (activePlayers.size() > 1) { // no need to bet if only one player
+			river();
+			startBetting();
+		}
+		if (activePlayers.size() > 1) { // can only notify if there was a
+			// showdown.
+			showdown();
+			contextAnalyzer.notifyEndOfHand(activePlayers);
+		} else {
+			System.out.println("" + activePlayers.get(0).getName()
+					+ " won, received " + getPot() + "chips");
+			activePlayers.get(0).recieveMoneyFromWin(getPot());
+			activePlayers.get(0).incrementWinCount();
+			activePlayers.get(0).incrementeasyWinsCount();
+		}
 		nextState();
 		handsPlayed++;
 		turn = (turn + 1) % players.size();
@@ -184,27 +199,50 @@ public class TexasHoldEm {
 		pot = SMALLBLIND + BIGBLIND;
 	}
 
+	/**
+	 * prints the hole cards of all players
+	 */
 	@SuppressWarnings("unused")
 	private void printHands() {
-		System.out.println("Holes:");
+		boolean humanHasJoined = false;
 		for (Player p : players) {
-			System.out.print(p.getName() + "\t");
-
+			if (p instanceof HumanPlayer) {
+				humanHasJoined = true;
+				System.out.println(p.getName());
+				System.out.println(p.hand[0].toString() + " and "
+						+ p.hand[1].toString());
+			}
 		}
-		System.out.print("\n");
-		for (Player p : players) {
-			System.out.print(p.hand[0].toString() + " and "
-					+ p.hand[1].toString() + "\t");
+		if (!humanHasJoined) {
+			System.out.println("Holes:");
+			for (Player p : players) {
+				System.out.print(p.getName() + "\t");
 
+			}
+			System.out.print("\n");
+			for (Player p : players) {
+				System.out.print(p.hand[0].toString() + " and "
+						+ p.hand[1].toString() + "\t");
+
+			}
+			System.out.println();
 		}
-		System.out.println();
-
 	}
 
+	/**
+	 * 
+	 * @param p
+	 *            the player
+	 * @return index of player in the player list (not activeplayer list)
+	 */
 	public int getIndexOfPlayer(Player p) {
 		return players.indexOf(p);
 	}
 
+	/**
+	 * prints appropriate info at end of game and decides who the winner(s)
+	 * is(are) and deals out the pot prize
+	 */
 	private void showdown() {
 		Player tmp;
 		ArrayList<Player> bestPlayers = new ArrayList<Player>();
@@ -213,9 +251,12 @@ public class TexasHoldEm {
 			System.out.println("Player " + activePlayers.get(0).getName()
 					+ " has won as everyone else folded.");
 			activePlayers.get(0).recieveMoneyFromWin(pot);
+			activePlayers.get(0).incrementWinCount();
+			activePlayers.get(0).incrementeasyWinsCount();
 			return;
 		}
 		for (Player p : activePlayers) {
+			p.incrementshowdownCount();
 			p.calculatePower();
 			System.out.println(p.getName() + " " + result(p.getPower()));
 			if (bestPlayers.size() == 0)
@@ -233,10 +274,12 @@ public class TexasHoldEm {
 
 		if (bestPlayers.size() == 1) {
 			System.out.println("Player " + bestPlayers.get(0).getName()
-					+ " has won with " + result(bestPlayers.get(0).getPower()));
+					+ " has won with " + result(bestPlayers.get(0).getPower()) + ". He won " + pot + " chips.");
 			bestPlayers.get(0).recieveMoneyFromWin(pot);
+			bestPlayers.get(0).incrementWinCount();
+			
 		} else {
-			System.out.print("There was a draw, pot split between:\n");
+			System.out.print("There was a draw, pot of " + pot + "split between:\n");
 			for (Player p : bestPlayers) {
 				p.recieveMoneyFromWin(pot / bestPlayers.size());
 				System.out.println(p.getName() + " " + result(p.getPower())
@@ -299,6 +342,11 @@ public class TexasHoldEm {
 		System.out.println("The Pot is at: " + pot + "\n\n");
 	}
 
+	/**
+	 * Forces each active player to bet or fold, adds money to pot, removes
+	 * money from player stacks, removes players from activePlayers list,
+	 * notifies contextAnalyzer for phase 3 players.
+	 */
 	private void startBetting() {
 		contextAnalyzer.newBettingRound(players);
 		int better = 0, lastbet = 0, betround = 0, bet;
@@ -370,10 +418,11 @@ public class TexasHoldEm {
 			if (better == activePlayers.size()) {
 				betround++;
 				better = 0;
-				System.out.println("Betround " + betround
-						+ " is now finished\n\n");
+				// System.out.println("Betround " + betround
+				// + " is now finished\n\n");
 			}
-		} while (lastbet < activePlayers.size() && betround < BETTINGROUNDS);
+		} while (lastbet < activePlayers.size() && betround < BETTINGROUNDS
+				&& activePlayers.size() > 1);
 		// 3 rounds of betting max
 
 		// For final betting round, so that end doesn't end with one having
@@ -417,17 +466,24 @@ public class TexasHoldEm {
 	@SuppressWarnings("unused")
 	private void fastSignupPlayers() {
 		players = new ArrayList<Player>();
-//		players.add(new PhaseOnePlayer(1, this));
-//		players.add(new PhaseOnePlayer(2, this));
-		// players.add(new PhaseOnePlayer(3, this));
-		players.add(new PhaseTwoPlayer("Phase2 aggressive", this, 1.2));
-		players.add(new PhaseTwoPlayer("Phase2 conservative", this, 1.0));
-		// players.add(new PhaseTwoPlayer("Phase2 6", this));
-		// players.add(new PhaseThreePlayer("Phase3 7", this, contextAnalyzer));
-		players.add(new PhaseThreePlayer("Phase3 aggressive", this,
+		// players.add(new PhaseOnePlayer(1, this, 0));
+		// players.add(new PhaseOnePlayer(2, this, 1));
+		// players.add(new PhaseOnePlayer(3, this, 0));
+		// players.add(new PhaseOnePlayer(4, this, 1));
+		// players.add(new PhaseTwoPlayer("Phase2 cons1.0", this, 1.0));
+		// players.add(new PhaseTwoPlayer("Phase2 cons1.1", this, 1.1));
+//		players.add(new PhaseTwoPlayer("Phase2 cons1.0", this, 1.0));
+//		players.add(new PhaseTwoPlayer("Phase2 aggr1.2", this, 1.2));
+//		players.add(new PhaseThreePlayer("Phase3 cons1.0", this,
+//				contextAnalyzer, 1.0));
+//		players.add(new PhaseThreePlayer("Phase3 aggr1.2", this,
+//				contextAnalyzer, 1.2));
+		players.add(new PhaseTwoPlayer("Phase2 cons1.0", this, 1.0));
+		players.add(new PhaseTwoPlayer("Phase2 aggr1.2", this, 1.2));
+		players.add(new PhaseThreePlayer("Phase3 cons1.2", this,
 				contextAnalyzer, 1.2));
-		players.add(new PhaseThreePlayer("Phase3 conservative", this,
-				contextAnalyzer, 1.0));
+		players.add(new PhaseThreePlayer("Phase3 aggr1.4", this,
+				contextAnalyzer, 1.4));
 		// players.add(new PhaseTwoPlayer("phase2 4", this));
 		// players.add(new HumanPlayer(sc, this));
 	}
@@ -437,9 +493,9 @@ public class TexasHoldEm {
 		players = new ArrayList<Player>();
 
 		System.out
-				.println("New Game started sign up players\n"
+				.println("New Game started \nsign up players\n"
 						+ " * 'h' for human player.\n"
-						+ " * '1' for phase one player.\n"
+						+ " * '1<strategy>' for phase one player.\n where <strategy> is 0 or 1\n"
 						+ " * '2<aggressiveness>' for phase two player.\n"
 						+ " * '3<aggressiveness>' for phase three player.\n where <aggressiveness> is a number from 0 to 9"
 						+ "\n" + " End with anything else.\n");
@@ -452,7 +508,7 @@ public class TexasHoldEm {
 				players.add(new HumanPlayer(sc, this));
 				break;
 			case '1':
-				players.add(new PhaseOnePlayer(comps++, this));
+				players.add(new PhaseOnePlayer(comps++, this, s.charAt(1)));
 				break;
 			case '2':
 				players.add(new PhaseTwoPlayer("Phase2 " + (comps++), this,

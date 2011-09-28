@@ -9,6 +9,9 @@ public class PhaseThreePlayer extends Player {
 
 	private P3ContextAnalyzer context;
 	private double aggressiveness;
+	//for statistical analysis
+	public boolean usedContext = false;
+	public int wonUsingContext = 0;
 
 	public PhaseThreePlayer(String name, TexasHoldEm game,
 			P3ContextAnalyzer context, double aggressiveness) {
@@ -17,13 +20,22 @@ public class PhaseThreePlayer extends Player {
 		this.aggressiveness = aggressiveness;
 	}
 
+	/**
+	 * Uses information on opponents, hand strength and pot odds to decide which
+	 * action to take.
+	 */
 	protected int placeBet() {
 		int ID = getHoleID();
 		int suited = (isSuited()) ? 0 : 9;
 		double handStrength = 0.0, deeperHandStrength = 0.0;
 		int minimum = game.getHighbet() - currentBet;
-//		System.out.println("HER ER JEG");
 		double highestOpp = context.highestAnticipated();
+		
+
+		double playerincrease = 1.0;
+		if (game.getActivePlayersSize() > 5)
+			playerincrease = Math.pow(1.04, game.getActivePlayersSize() - 1);
+
 		switch (game.getGameState()) {
 		case Pre_flop:
 
@@ -35,58 +47,106 @@ public class PhaseThreePlayer extends Player {
 					+ " from hole_strength where ref = " + ID + ";");
 			try {
 				rs.next();
-				handStrength = rs.getDouble(1);
-				deeperHandStrength = handStrength*aggressiveness - potOdds();
+				handStrength = rs.getDouble(1) * aggressiveness
+						* playerincrease;
+				deeperHandStrength = handStrength - potOdds();
 			} catch (SQLException e) {
 				e.printStackTrace();
 			}
 			db.disconnect();
-			
-			if (highestOpp > 0.0) {
-				double strengthDiff = handStrength*aggressiveness - highestOpp;
-//				System.out.println(printUseOfContextAnalysis(handStrength, highestOpp));
+
+			/*if (highestOpp > 0.0) {
+				
+				double strengthDiff = handStrength - highestOpp;
 				if (strengthDiff > .14) {
 					return 100 + minimum;
 				} else if (strengthDiff > .0) {
 					return 50 + minimum;
-				} else if (strengthDiff > -.14) {
+				} else if (strengthDiff > -.05) {
 					return minimum;
 				} else
 					return 0;
 
-			}
+			}*/
 
 			if (deeperHandStrength > .14) {
 				return 100 + minimum;
 			} else if (deeperHandStrength > .0) {
 				return 50 + minimum;
-			} else if (deeperHandStrength > -.14) {
+			} else if (deeperHandStrength > -.05) {
 				return minimum;
 			} else
 				return 0;
 		case Flop:
-		case Turn:
-		case River:
-			
-			
-			
-			handStrength = handStrength(5)*aggressiveness;
-			if(highestOpp != 0){
+			/*handStrength = handStrength(5) * playerincrease;
+			if (highestOpp != 0) {
 				double strengthDiff = handStrength - highestOpp;
-				System.out.println(printUseOfContextAnalysis(handStrength, highestOpp));
+				System.out.println(printUseOfContextAnalysis(handStrength,
+						highestOpp));
 				if (strengthDiff > .1) {
 					return 200 + minimum;
 				} else if (strengthDiff > .0) {
 					return 50 + minimum;
-				} else if (strengthDiff > -.1) {
+				} else if (strengthDiff > -.05) {
 					return minimum;
 				} else
 					return 0;
 
 			}
-			
-			
-			
+
+			double hs = handStrength - potOdds();
+			if (hs > .1) {
+				return 200 + minimumBet();
+			} else if (hs > .0) {
+				return 50 + minimumBet();
+			} else if (hs > -.1) {
+				return minimumBet();
+			} else
+				return 0;*/
+		case Turn:
+			/*handStrength = handStrength(5) * playerincrease;
+			if (highestOpp != 0) {
+				double strengthDiff = handStrength - highestOpp;
+				System.out.println(printUseOfContextAnalysis(handStrength,
+						highestOpp));
+				if (strengthDiff > .1) {
+					return 200 + minimum;
+				} else if (strengthDiff > .0) {
+					return 50 + minimum;
+				} else if (strengthDiff > -.05) {
+					return minimum;
+				} else
+					return 0;
+
+			}
+
+			double hs = handStrength - potOdds();
+			if (hs > .1) {
+				return 200 + minimumBet();
+			} else if (hs > .0) {
+				return 50 + minimumBet();
+			} else if (hs > -.1) {
+				return minimumBet();
+			} else
+				return 0;*/
+		case River:
+
+			handStrength = handStrength(5) * playerincrease;
+			if (highestOpp != 0) {
+				double strengthDiff = handStrength - highestOpp;
+				System.out.println(printUseOfContextAnalysis(handStrength,
+						highestOpp));
+				if (strengthDiff > .1) {
+					return 200 + minimum;
+				} else if (strengthDiff > .0) {
+					return 50 + minimum;
+				} else if (strengthDiff > -.05) {
+					return minimum;
+				} else
+					return 0;
+
+			}
+
 			double hs = handStrength - potOdds();
 			if (hs > .1) {
 				return 200 + minimumBet();
@@ -102,9 +162,9 @@ public class PhaseThreePlayer extends Player {
 
 	}
 
-	
-	public String printUseOfContextAnalysis(double handStrength, double opponent){
-		return new String("" + this.name + " used context analysis, hs: " + handStrength + "\t opponent: " + opponent + 
-				" diff: " + (handStrength - opponent));
+	public String printUseOfContextAnalysis(double handStrength, double opponent) {
+		return new String("" + this.name + " used context analysis, hs: "
+				+ handStrength + "\t opponent: " + opponent + " diff: "
+				+ (handStrength - opponent));
 	}
 }
